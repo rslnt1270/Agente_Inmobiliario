@@ -186,6 +186,10 @@ def _extraer_anuncio(card: BeautifulSoup, nombre_canonico: str) -> dict | None:
         "recamaras": recamaras,
         "banos": banos,
         "estacionamientos": estacionamientos,
+        # Campos extra (ignorados por a_canonico) reutilizados por scrape_zona
+        # para construir el texto de detección de colonia.
+        "titulo": titulo,
+        "ubicacion": ubicacion,
     }
 
 
@@ -314,6 +318,96 @@ def scrape_todas(
 
     log.info("Total de registros obtenidos: %d", len(todas))
     return todas
+
+
+# ---------------------------------------------------------------------------
+# Interfaz de zona (franja Alameda Oriente) — registros crudos, no canónicos
+# ---------------------------------------------------------------------------
+# Nezahualcóyotl vive en Lamudi bajo "/mexico/..." (Edomex), no "/distrito-federal/".
+# Las colonias de GAM (San Juan de Aragón, Campestre Aragón) sí resuelven en su URL
+# propia sin redirigir a otro estado; en cambio los slugs de colonia de VC e
+# Iztacalco (moctezuma, pantitlan...) chocan con topónimos homónimos de otros
+# estados y Lamudi redirige mal (verificado en vivo) — por eso para esas dos
+# alcaldías se usa el feed a nivel alcaldía completo (más ruido, pero correcto;
+# zona/filtros.py se encarga de acotar a las colonias exactas vía `texto`).
+# Nota: "venustiano-carranza" (slug de config.py) también redirige a Chiapas;
+# el slug correcto de la alcaldía CDMX en Lamudi es "venustiano-carranza-1".
+FEEDS_ZONA = [
+    "https://www.lamudi.com.mx/mexico/nezahualcoyotl/for-rent/",
+    "https://www.lamudi.com.mx/mexico/nezahualcoyotl/casa/for-rent/",
+    "https://www.lamudi.com.mx/distrito-federal/gustavo-a-madero/san-juan-de-aragon/for-rent/",
+    "https://www.lamudi.com.mx/distrito-federal/gustavo-a-madero/campestre-aragon/for-rent/",
+    "https://www.lamudi.com.mx/distrito-federal/venustiano-carranza-1/for-rent/",
+    "https://www.lamudi.com.mx/distrito-federal/iztacalco/for-rent/",
+]
+
+MAX_PAGINAS_ZONA = 2
+
+
+def _url_zona_pagina(url_base: str, pagina: int) -> str:
+    """Añade '?page=N' a un feed de zona ya completo (páginas 2+)."""
+    if pagina <= 1:
+        return url_base
+    return f"{url_base}?page={pagina}"
+
+
+def _anuncio_a_crudo(anuncio: dict) -> dict:
+    """Mapea el dict de `_extraer_anuncio` al contrato crudo de zona (11 claves)."""
+    titulo = anuncio.get("titulo") or ""
+    ubicacion = anuncio.get("ubicacion") or ""
+    url = anuncio.get("url") or ""
+    return {
+        "precio": anuncio.get("precio"),
+        "tipo_inmueble": anuncio.get("tipo_inmueble") or "departamento",
+        "m2": anuncio.get("m2"),
+        "recamaras": anuncio.get("recamaras"),
+        "banos": anuncio.get("banos"),
+        "estacionamientos": anuncio.get("estacionamientos"),
+        "url": url,
+        "publicado_por": None,  # Lamudi no expone publicador en el listado
+        "telefono": None,       # ni teléfono público
+        "texto": f"{titulo} {ubicacion} {url}",
+        "fuente": FUENTE,
+    }
+
+
+def scrape_zona(max_paginas: int = MAX_PAGINAS_ZONA) -> list[dict]:
+    """Descarga los feeds de la franja Alameda Oriente y devuelve registros crudos.
+
+    Reutiliza `_descargar_pagina`, `_extraer_anuncio` y `_hay_pagina_siguiente`
+    (los mismos helpers que `scrape_alcaldia`), solo que sobre URLs de feed ya
+    completas en vez de construidas a partir de un slug de alcaldía.
+    """
+    regs: list[dict] = []
+    for i, url_base in enumerate(FEEDS_ZONA):
+        for pagina in range(1, max_paginas + 1):
+            url = _url_zona_pagina(url_base, pagina)
+            soup = _descargar_pagina(url)
+            if soup is None:
+                break
+
+            cards = soup.find_all(attrs={"data-test": "normal-listing"})
+            if not cards:
+                break
+
+            for card in cards:
+                try:
+                    anuncio = _extraer_anuncio(card, "")
+                    if anuncio is None:
+                        continue
+                    regs.append(_anuncio_a_crudo(anuncio))
+                except Exception:
+                    continue
+
+            if pagina < max_paginas and _hay_pagina_siguiente(soup):
+                polite_sleep()
+            else:
+                break
+
+        if i < len(FEEDS_ZONA) - 1:
+            polite_sleep()
+
+    return regs
 
 
 # ---------------------------------------------------------------------------

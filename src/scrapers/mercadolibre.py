@@ -108,7 +108,7 @@ def _parsear_atributos(textos: list[str]) -> dict:
     return resultado
 
 
-def _extraer_polycards(page_source: str) -> list[dict]:
+def _extraer_polycards(page_source: str, tipo_default: str = "departamento") -> list[dict]:
     """
     Extrae datos crudos de cada tarjeta usando regex sobre el JSON embebido.
 
@@ -164,7 +164,7 @@ def _extraer_polycards(page_source: str) -> list[dict]:
 
         reg: dict = {
             "precio": precio,
-            "tipo_inmueble": "departamento",
+            "tipo_inmueble": tipo_default,
             "url": urls[i] if i < len(urls) else None,
             **atributos,
         }
@@ -306,6 +306,84 @@ def scrape_todas(
         driver.quit()
 
     return todas_filas
+
+
+# ── Interfaz de zona (franja Alameda Oriente) — registros crudos ──────────────
+# Cada feed es (url_base, tipo_default, contexto). `contexto` es la
+# colonia/alcaldía a la que ya está acotada la URL del feed; se agrega al
+# `texto` de cada registro porque los polycards de MELI (a diferencia de
+# Nuroa/Lamudi) no exponen título ni dirección en el JSON embebido — solo
+# precio, atributos y URL — así que sin esta pista zona/perimetro.py no podría
+# detectar la colonia de anuncios cuya URL no la menciona explícitamente.
+FEEDS_ZONA: list[tuple[str, str, str]] = [
+    ("https://inmuebles.mercadolibre.com.mx/departamentos/renta/estado-de-mexico/nezahualcoyotl/", "departamento", "Nezahualcóyotl"),
+    ("https://inmuebles.mercadolibre.com.mx/casas/renta/estado-de-mexico/nezahualcoyotl/", "casa", "Nezahualcóyotl"),
+    ("https://inmuebles.mercadolibre.com.mx/departamentos/renta/distrito-federal/gustavo-a-madero/san-juan-de-aragon/", "departamento", "San Juan de Aragón"),
+    ("https://inmuebles.mercadolibre.com.mx/departamentos/renta/distrito-federal/gustavo-a-madero/campestre-aragon/", "departamento", "Campestre Aragón"),
+    ("https://inmuebles.mercadolibre.com.mx/departamentos/renta/distrito-federal/venustiano-carranza/", "departamento", "Venustiano Carranza"),
+    ("https://inmuebles.mercadolibre.com.mx/departamentos/renta/distrito-federal/iztacalco/", "departamento", "Iztacalco"),
+]
+
+MAX_PAGINAS_ZONA = 2
+
+
+def _polycard_a_crudo(reg: dict, contexto: str) -> dict:
+    """Mapea un registro crudo de `_extraer_polycards` al contrato de zona."""
+    url = reg.get("url") or ""
+    return {
+        "precio": reg.get("precio"),
+        "tipo_inmueble": reg.get("tipo_inmueble") or "departamento",
+        "m2": reg.get("m2"),
+        "recamaras": reg.get("recamaras"),
+        "banos": reg.get("banos"),
+        "estacionamientos": reg.get("estacionamientos"),
+        "url": url,
+        "publicado_por": None,  # MELI no expone publicador en el listado
+        "telefono": None,       # ni teléfono público
+        "texto": f"{contexto} {url}",
+        "fuente": FUENTE,
+    }
+
+
+def scrape_zona(max_paginas: int = MAX_PAGINAS_ZONA) -> list[dict]:
+    """Raspa los feeds de la franja Alameda Oriente y devuelve registros crudos.
+
+    Reutiliza `_build_driver`, `_cargar_pagina`, `_extraer_polycards` y
+    `_url_pagina` (los mismos helpers que `scrape_alcaldia`/`scrape_todas`).
+    """
+    regs: list[dict] = []
+    driver = _build_driver()
+    try:
+        for i, (url_base, tipo_default, contexto) in enumerate(FEEDS_ZONA):
+            paginas_vacias = 0
+            for pagina in range(1, max_paginas + 1):
+                url = _url_pagina(url_base, pagina)
+                ok = _cargar_pagina(driver, url)
+                if not ok:
+                    paginas_vacias += 1
+                    if paginas_vacias >= 2:
+                        break
+                    continue
+
+                crudos = _extraer_polycards(driver.page_source, tipo_default=tipo_default)
+                if not crudos:
+                    paginas_vacias += 1
+                    if paginas_vacias >= 2:
+                        break
+                else:
+                    paginas_vacias = 0
+                    for reg in crudos:
+                        regs.append(_polycard_a_crudo(reg, contexto))
+
+                if pagina < max_paginas:
+                    polite_sleep()
+
+            if i < len(FEEDS_ZONA) - 1:
+                polite_sleep()
+    finally:
+        driver.quit()
+
+    return regs
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────

@@ -302,6 +302,68 @@ def scrape_todas(
 
 
 # ---------------------------------------------------------------------------
+# Interfaz de zona (franja Alameda Oriente) — registros crudos, no canónicos
+# ---------------------------------------------------------------------------
+
+FEEDS_ZONA = [
+    "https://www.nuroa.com.mx/renta-departamentos/departamento-nezahualcoyotl",
+    "https://www.nuroa.com.mx/renta-casas/casa-nezahualcoyotl",
+]
+
+
+def _card_a_crudo(card) -> dict | None:
+    """Convierte un card de Nuroa al registro crudo del contrato de zona."""
+    precio = _extraer_precio(card)
+    url = _extraer_url(card)
+    titulo = _extraer_titulo(card) or ""
+    direccion = _extraer_direccion(card) or ""
+    feats = _extraer_features(card)
+    if not url:
+        return None
+    tipo = "casa" if "casa" in titulo.lower() else "departamento"
+    return {
+        "precio": precio,
+        "tipo_inmueble": tipo,
+        "m2": feats["m2"],
+        "recamaras": feats["recamaras"],
+        "banos": feats["banos"],
+        "estacionamientos": feats["estacionamientos"],
+        "url": url,
+        "publicado_por": None,   # Nuroa no expone publicador en el listado
+        "telefono": None,        # ni teléfono público
+        "texto": f"{titulo} {direccion} {url}",
+        "fuente": "nuroa",
+    }
+
+
+def parse_zona_html(html: str) -> list[dict]:
+    """Parsea el HTML de un listado de zona y devuelve registros crudos."""
+    soup = BeautifulSoup(html, "html.parser")
+    out = []
+    for card in _extraer_cards(soup):
+        reg = _card_a_crudo(card)
+        if reg is not None:
+            out.append(reg)
+    return out
+
+
+def scrape_zona() -> list[dict]:
+    """Descarga los feeds de la franja Alameda Oriente y devuelve registros crudos."""
+    regs: list[dict] = []
+    with httpx.Client(http2=True, follow_redirects=True, timeout=25) as client:
+        for i, url in enumerate(FEEDS_ZONA):
+            try:
+                r = client.get(url, headers=get_headers())
+            except Exception:
+                continue
+            if r.status_code == 200:
+                regs.extend(parse_zona_html(r.text))
+            if i < len(FEEDS_ZONA) - 1:
+                polite_sleep()
+    return regs
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
