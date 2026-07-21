@@ -9,7 +9,6 @@ Veredictos de portales probados en vivo para el pipeline de zona (Task 6–8).
 | Lamudi | httpx+BS4 | ✅ | integrado |
 | Nuroa | httpx+BS4 | ✅ | integrado |
 | MercadoLibre | Selenium | ✅ | integrado |
-| Vivanuncios | httpx+BS4 (`data-qa`) | ✅ | integrado; teléfono gateado (no se extrae); requiere `httpx.Client(http2=False, ...)` — con HTTP/2 el mismo request dispara un challenge gestionado de Cloudflare (ver detalle abajo) |
 | Doomos | httpx + JSON RSC | ✅ | integrado; expone `contact_phone` |
 | Casas y Terrenos | httpx+BS4 | ✅ pero sin inventario en la zona | no integrado (resultados fallback de otras alcaldías) |
 | Nestoria | — | ❌ | 401 Access Denied (gate de borde) |
@@ -18,27 +17,24 @@ Veredictos de portales probados en vivo para el pipeline de zona (Task 6–8).
 | Inmuebles24 | — | ❌ | DataDome 403 |
 | Propiedades.com | — | ❌ | challenge anti-bot |
 | icasas / vivastreet / segundamano | — | ❌ | muertos/redirigen |
+| Vivanuncios | httpx+BS4 (`data-qa`) | ❌ | Cloudflare managed challenge bajo HTTP/2 con headers de navegador; solo responde si se degrada el fingerprint a HTTP/1.1 = evasión, fuera de alcance |
 
 ## Notas de integración (Task 8)
 
-### Vivanuncios
+### Vivanuncios (bloqueado, no integrado)
 
 Confirmado en vivo (2026-07-21): con `httpx.Client(http2=True, ...)` +
 `config.get_headers()` (el mismo cliente que usan `nuroa`/`lamudi`), Vivanuncios
 responde **403 con un challenge gestionado de Cloudflare** ("Just a moment...",
 header `cf-mitigated: challenge`), de forma consistente en múltiples intentos.
 Con el mismo cliente y los mismos headers pero `http2=False` (HTTP/1.1),
-responde **200** con el HTML de listados real. No se intentó resolver el
-challenge (sin ejecución de JS, sin cookies de sesión de terceros, sin
-proxies) — el ajuste fue únicamente el parámetro de transporte del propio
-cliente httpx del proyecto. `scrape_zona()` usa `http2=False`; si en el
-futuro un feed vuelve a devolver un challenge/interstitial en vez de
-listados, se omite ese feed (try/except por feed, sin evasión adicional).
-
-El campo `publicado_por` se extrae del `alt` de `img[data-qa="POSTING_CARD_PUBLISHER"]`
-cuando existe; en la práctica ese `alt` es un texto genérico ("logo publisher"),
-no el nombre real de la agencia — se deja tal cual porque es lo único
-disponible en el listado. `telefono` queda `None` (gateado tras botón).
+responde **200** con el HTML de listados real. Es decir, el portal solo cede
+contenido si se degrada deliberadamente el fingerprint de transporte para
+esquivar el challenge — eso es evasión de una protección anti-bot, fuera del
+alcance permitido del proyecto (regla: solo se scrapea lo que el sitio sirve
+sin circunvenir un challenge). Por eso Vivanuncios se removió de
+`SCRAPERS_ZONA` y queda reclasificado como ❌ bloqueado en la tabla de arriba,
+pese a que técnicamente el HTML era parseable con `data-qa`.
 
 ### Doomos
 
