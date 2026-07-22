@@ -18,6 +18,10 @@ def test_enriquecer_descarta_municipio_vecino():
     assert enriquecer(_crudo(texto="casa en cuautitlan", url="https://x/cuautitlan")) is None
 
 
+def test_enriquecer_descarta_no_residencial():
+    assert enriquecer(_crudo(tipo_inmueble="oficina")) is None
+
+
 def test_enriquecer_ok_marca_estacionamiento_y_banda():
     r = enriquecer(_crudo(precio=9000.0, estacionamientos=0))
     assert r["colonia"] == "El Sol"

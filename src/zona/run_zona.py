@@ -22,6 +22,8 @@ def enriquecer(crudo: dict) -> dict | None:
     precio = crudo.get("precio")
     if not en_rango(precio):
         return None
+    if crudo.get("tipo_inmueble") not in ("departamento", "casa"):
+        return None
     texto, url = crudo.get("texto", ""), crudo.get("url", "")
     if es_municipio_vecino(texto, url):
         return None
