@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in | CClean</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-mono/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: '#F9FAFB',
+                        'midnight-navy': '#011C40',
+                        'deep-navy': '#023859',
+                        'steel-blue': '#26658C',
+                        'soft-teal': '#54ACBF',
+                        'ice-blue': '#A7EBF2',
+                    },
+                    fontFamily: {
+                        sans: ['"Geist Sans"', 'sans-serif'],
+                        mono: ['"Geist Mono"', 'monospace'],
+                    },
+                    borderRadius: {
+                        '4xl': '1.5rem',
+                    },
+                    boxShadow: {
+                        'diffused': '0 10px 40px -10px rgba(1, 28, 64, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.canvas');
+            color: theme('colors.midnight-navy');
+            font-family: 'Geist Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .spring-active:active {
+            transform: scale(0.96) translateY(2px);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .spring-transition {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* Custom Checkbox */
+        .task-checkbox:checked + div {
+            background-color: theme('colors.soft-teal');
+            border-color: theme('colors.soft-teal');
+        }
+        .task-checkbox:checked + div svg {
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-28">
+
+    <!-- Header -->
+    <header class="bg-midnight-navy text-white px-6 py-12 pb-8 rounded-b-4xl relative overflow-hidden shadow-diffused">
+        <!-- Subtle cinematic background effect (CSS based for now) -->
+        <div class="absolute inset-0 opacity-20 bg-gradient-to-br from-soft-teal/30 to-midnight-navy/0"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-soft-teal/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="relative z-10">
+            <button class="mb-6 flex items-center text-ice-blue hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver
+            </button>
+            <p class="font-mono text-ice-blue text-sm uppercase tracking-widest mb-1">Unidad 04</p>
+            <h1 class="text-3xl font-bold tracking-tight">Check-in: Departamento 2</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 sm:px-6 pt-8 max-w-md mx-auto w-full">
+        
+        <!-- Task Checklist -->
+        <section class="mb-10">
+            <h2 class="text-lg font-semibold text-deep-navy mb-4 px-2">Lista de Verificación</h2>
+            
+            <div class="space-y-3">
+                <!-- Task Item 1 -->
+                <label class="flex items-center p-4 bg-white rounded-2xl shadow-diffused cursor-pointer hover:bg-canvas transition-colors">
+                    <div class="relative flex items-center justify-center">
+                        <input type="checkbox" class="task-checkbox opacity-0 absolute h-0 w-0" />
+                        <div class="w-6 h-6 border-2 border-steel-blue/30 rounded-full flex items-center justify-center transition-colors">
+                            <svg class="w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-4 font-medium text-midnight-navy">Limpieza de baños</span>
+                </label>
+
+                <!-- Task Item 2 -->
+                <label class="flex items-center p-4 bg-white rounded-2xl shadow-diffused cursor-pointer hover:bg-canvas transition-colors">
+                    <div class="relative flex items-center justify-center">
+                        <input type="checkbox" class="task-checkbox opacity-0 absolute h-0 w-0" />
+                        <div class="w-6 h-6 border-2 border-steel-blue/30 rounded-full flex items-center justify-center transition-colors">
+                            <svg class="w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-4 font-medium text-midnight-navy">Cambio de sábanas</span>
+                </label>
+
+                <!-- Task Item 3 -->
+                <label class="flex items-center p-4 bg-white rounded-2xl shadow-diffused cursor-pointer hover:bg-canvas transition-colors">
+                    <div class="relative flex items-center justify-center">
+                        <input type="checkbox" class="task-checkbox opacity-0 absolute h-0 w-0" />
+                        <div class="w-6 h-6 border-2 border-steel-blue/30 rounded-full flex items-center justify-center transition-colors">
+                            <svg class="w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-4 font-medium text-midnight-navy">Amenidades completas</span>
+                </label>
+                
+                <!-- Task Item 4 -->
+                <label class="flex items-center p-4 bg-white rounded-2xl shadow-diffused cursor-pointer hover:bg-canvas transition-colors">
+                    <div class="relative flex items-center justify-center">
+                        <input type="checkbox" class="task-checkbox opacity-0 absolute h-0 w-0" />
+                        <div class="w-6 h-6 border-2 border-steel-blue/30 rounded-full flex items-center justify-center transition-colors">
+                            <svg class="w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-4 font-medium text-midnight-navy">Revisión de inventario</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Photo Upload Section -->
+        <section>
+            <div class="flex items-center justify-between mb-4 px-2">
+                <h2 class="text-lg font-semibold text-deep-navy">Evidencia Fotográfica</h2>
+                <span class="font-mono text-sm text-steel-blue">0/4</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Upload Target -->
+                <button class="spring-active bg-ice-blue/20 border-2 border-dashed border-soft-teal/40 rounded-3xl h-36 flex flex-col items-center justify-center text-steel-blue hover:bg-ice-blue/40 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-soft-teal/10 flex items-center justify-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-soft-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium">Capturar</span>
+                </button>
+
+                <!-- Upload Target -->
+                <button class="spring-active bg-white border border-gray-100 rounded-3xl h-36 flex flex-col items-center justify-center text-steel-blue shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 rounded-full bg-canvas flex items-center justify-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-steel-blue/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium">Añadir</span>
+                </button>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Floating Action Bar -->
+    <div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-canvas via-canvas/90 to-transparent pointer-events-none z-50">
+        <div class="max-w-md mx-auto pointer-events-auto px-2">
+            <button class="spring-active w-full bg-soft-teal text-white font-bold text-lg py-5 rounded-2xl shadow-diffused flex items-center justify-center h-16">
+                Completar Check-in
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

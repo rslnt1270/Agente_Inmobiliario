@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CClean Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: '#F9FAFB',
+                        navy: '#011C40',
+                        teal: '#54ACBF'
+                    },
+                    fontFamily: {
+                        sans: ['Geist', 'sans-serif'],
+                        mono: ['"Geist Mono"', 'monospace'],
+                    },
+                    borderRadius: {
+                        '4xl': '1.5rem',
+                    },
+                    boxShadow: {
+                        'diffused': '0 10px 40px -10px rgba(1, 28, 64, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.canvas');
+            color: theme('colors.navy');
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-canvas text-navy font-sans antialiased flex flex-col md:flex-row">
+    
+    <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Cinematic Header -->
+        <header class="bg-navy text-white p-10 md:p-16 rounded-b-[2.5rem] md:rounded-b-[3rem] shadow-2xl relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1558442074-3c19857bc1dc?auto=format&fit=crop&q=80')] bg-cover bg-center mix-blend-overlay"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-navy to-transparent opacity-80"></div>
+            <div class="relative z-10 max-w-7xl mx-auto w-full">
+                <h1 class="text-4xl md:text-5xl font-light tracking-tight mb-2">Hola, <span class="font-semibold">Administradora</span></h1>
+                <p class="text-teal text-lg font-medium tracking-wide opacity-90">Resumen de operaciones • 5 Departamentos</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 md:p-10 -mt-12 md:-mt-16 relative z-20 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Key Metrics Row -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-4xl p-6 shadow-diffused border border-gray-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Ingresos Totales</h3>
+                        <p class="font-mono text-3xl font-bold text-navy">$45,200</p>
+                        <p class="text-xs text-green-600 mt-2 font-medium">+12% este mes</p>
+                    </div>
+                    <div class="bg-white rounded-4xl p-6 shadow-diffused border border-gray-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Gastos Mantenimiento</h3>
+                        <p class="font-mono text-3xl font-bold text-navy">$8,450</p>
+                        <p class="text-xs text-red-500 mt-2 font-medium">-3% este mes</p>
+                    </div>
+                    <div class="bg-white rounded-4xl p-6 shadow-diffused border border-gray-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Estado Limpiezas</h3>
+                        <p class="font-mono text-3xl font-bold text-teal">12 / 15</p>
+                        <p class="text-xs text-gray-500 mt-2 font-medium">Completadas esta semana</p>
+                    </div>
+                </section>
+
+                <!-- Unified Calendar Section -->
+                <section class="bg-white rounded-4xl p-8 shadow-diffused border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-navy">Próximas Limpiezas</h2>
+                        <button class="text-teal font-medium hover:text-navy transition-colors text-sm">Ver calendario &rarr;</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- Calendar Item -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-canvas hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center min-w-[4rem]">
+                                    <span class="block text-xs font-bold text-gray-400 uppercase">Hoy</span>
+                                    <span class="block font-mono text-xl font-bold text-navy">08</span>
+                                </div>
+                                <div>
+                                    <a href="checkin.html" class="hover:underline">
+                                        <h4 class="font-semibold text-navy">Departamento 1</h4>
+                                    </a>
+                                    <p class="text-sm text-gray-500">Salida de huésped • Limpieza profunda</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-teal/10 text-teal rounded-full text-xs font-bold tracking-wide">10:00 AM</span>
+                        </div>
+
+                        <!-- Calendar Item -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-canvas hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center min-w-[4rem]">
+                                    <span class="block text-xs font-bold text-gray-400 uppercase">Hoy</span>
+                                    <span class="block font-mono text-xl font-bold text-navy">08</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Departamento 3</h4>
+                                    <p class="text-sm text-gray-500">Mantenimiento preventivo</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-bold tracking-wide">02:30 PM</span>
+                        </div>
+
+                         <!-- Calendar Item -->
+                         <div class="flex items-center justify-between p-4 rounded-2xl bg-canvas hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center min-w-[4rem]">
+                                    <span class="block text-xs font-bold text-gray-400 uppercase">Mañ</span>
+                                    <span class="block font-mono text-xl font-bold text-navy">09</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Departamento 5</h4>
+                                    <p class="text-sm text-gray-500">Limpieza estándar</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-teal/10 text-teal rounded-full text-xs font-bold tracking-wide">11:00 AM</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Notification Center -->
+            <div class="lg:col-span-1">
+                <aside class="bg-white rounded-4xl p-8 shadow-diffused border border-gray-100 h-full">
+                    <h2 class="text-xl font-semibold text-navy mb-6">Centro de Alertas</h2>
+                    
+                    <div class="space-y-5">
+                        <!-- Alert Item -->
+                        <div class="flex gap-4 items-start">
+                            <div class="w-2 h-2 mt-2 rounded-full bg-red-500 shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-navy">Facturas pendientes</h4>
+                                <p class="text-xs text-gray-500 mt-1">El proveedor de insumos de limpieza tiene 2 facturas vencidas.</p>
+                                <button class="text-xs text-teal font-medium mt-2 hover:underline">Revisar facturas</button>
+                            </div>
+                        </div>
+                        <hr class="border-gray-100">
+                        <!-- Alert Item -->
+                        <div class="flex gap-4 items-start">
+                            <div class="w-2 h-2 mt-2 rounded-full bg-green-500 shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-navy">Check-in completado en Depa 2</h4>
+                                <p class="text-xs text-gray-500 mt-1">Huéspedes instalados sin incidencias.</p>
+                                <span class="text-xs text-gray-400 mt-2 block">Hace 2 horas</span>
+                            </div>
+                        </div>
+                        <hr class="border-gray-100">
+                        <!-- Alert Item -->
+                        <div class="flex gap-4 items-start">
+                            <div class="w-2 h-2 mt-2 rounded-full bg-yellow-500 shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-navy">Bajo inventario</h4>
+                                <p class="text-xs text-gray-500 mt-1">Detergente y papel higiénico al 15% de capacidad.</p>
+                                <button class="text-xs text-teal font-medium mt-2 hover:underline">Generar orden</button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>
